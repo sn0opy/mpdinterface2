@@ -1,6 +1,6 @@
-# MPD-Webinterface 2
+# mpdinterface2
 
-Version 2 is still under development. You may encounter issues which should be fixed in the final version.
+Version 2 is still under development. You may encounter issues which should be fixed in the final version. You can find the old version [here](https://github.com/sn0opy/MPD-Webinterface)
 
 ## Documentation
 

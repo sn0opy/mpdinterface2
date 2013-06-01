@@ -1,0 +1,39 @@
+body {
+	font-size: 11pt;
+}
+
+.navbar span.nowplaying {
+	color: #FFF;
+	line-height: 60px;
+	float: left;
+	font-size: 15pt;
+}
+
+.playlist {
+	width: 100%;
+}
+
+.playlist th {
+	font-weight: bold;
+	text-align: left;
+}
+
+.playlist tr {
+	border-bottom: 1px solid #EEE;
+}
+
+.playlist td:first-child, .playlist th:first-child {
+	padding-left: 20px;
+}
+
+.playlist td {
+	padding: 3px;
+}
+
+tr.nowplaying {
+	background: #E5F8FF;
+}
+
+.playlist tr:last-child {
+	border: 0px;
+}

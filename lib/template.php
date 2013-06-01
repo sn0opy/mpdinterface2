@@ -1,7 +1,7 @@
 <?php
 
 /*
-	Copyright (c) 2009-2012 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2013 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
 
@@ -16,18 +16,23 @@
 //! Template engine
 class Template extends View {
 
+	//@{ Error messages
+	const
+		E_Method='Call to undefined method %s()';
+	//@}
+
 	protected
 		//! MIME type
 		$mime,
 		//! Template tags
-		$tags='set|include|exclude|ignore|loop|repeat|check|true|false',
+		$tags,
 		//! Custom tag handlers
 		$custom=array();
 
 	/**
-		Convert token to variable
-		@return string
-		@param $str string
+	*	Convert token to variable
+	*	@return string
+	*	@param $str string
 	**/
 	function token($str) {
 		$self=$this;
@@ -39,7 +44,7 @@ class Template extends View {
 					'/(\.\w+)|\[((?:[^\[\]]*|(?R))*)\]/',
 					function($expr) use($self) {
 						$fw=Base::instance();
-						return 
+						return
 							'['.
 							($expr[1]?
 								$fw->stringify(substr($expr[1],1)):
@@ -58,9 +63,9 @@ class Template extends View {
 	}
 
 	/**
-		Template -set- tag handler
-		@return string
-		@param $node array
+	*	Template -set- tag handler
+	*	@return string
+	*	@param $node array
 	**/
 	protected function _set(array $node) {
 		$out='';
@@ -73,9 +78,9 @@ class Template extends View {
 	}
 
 	/**
-		Template -include- tag handler
-		@return string
-		@param $node array
+	*	Template -include- tag handler
+	*	@return string
+	*	@param $node array
 	**/
 	protected function _include(array $node) {
 		$attrib=$node['@attrib'];
@@ -90,26 +95,26 @@ class Template extends View {
 	}
 
 	/**
-		Template -exclude- tag handler
-		@return string
+	*	Template -exclude- tag handler
+	*	@return string
 	**/
 	protected function _exclude() {
 		return '';
 	}
 
 	/**
-		Template -ignore- tag handler
-		@return string
-		@param $node array
+	*	Template -ignore- tag handler
+	*	@return string
+	*	@param $node array
 	**/
 	protected function _ignore(array $node) {
 		return $node[0];
 	}
 
 	/**
-		Template -loop- tag handler
-		@return string
-		@param $node array
+	*	Template -loop- tag handler
+	*	@return string
+	*	@param $node array
 	**/
 	protected function _loop(array $node) {
 		$attrib=$node['@attrib'];
@@ -124,9 +129,9 @@ class Template extends View {
 	}
 
 	/**
-		Template -repeat- tag handler
-		@return string
-		@param $node array
+	*	Template -repeat- tag handler
+	*	@return string
+	*	@param $node array
 	**/
 	protected function _repeat(array $node) {
 		$attrib=$node['@attrib'];
@@ -146,9 +151,9 @@ class Template extends View {
 	}
 
 	/**
-		Template -check- tag handler
-		@return string
-		@param $node array
+	*	Template -check- tag handler
+	*	@return string
+	*	@param $node array
 	**/
 	protected function _check(array $node) {
 		$attrib=$node['@attrib'];
@@ -169,27 +174,27 @@ class Template extends View {
 	}
 
 	/**
-		Template -true- tag handler
-		@return string
-		@param $node array
+	*	Template -true- tag handler
+	*	@return string
+	*	@param $node array
 	**/
 	protected function _true(array $node) {
 		return $this->build($node);
 	}
 
 	/**
-		Template -false- tag handler
-		@return string
-		@param $node array
+	*	Template -false- tag handler
+	*	@return string
+	*	@param $node array
 	**/
 	protected function _false(array $node) {
 		return '<?php else: ?>'.$this->build($node);
 	}
 
 	/**
-		Assemble markup
-		@return string
-		@param $node array|string
+	*	Assemble markup
+	*	@return string
+	*	@param $node array|string
 	**/
 	protected function build($node) {
 		if (is_string($node)) {
@@ -198,7 +203,7 @@ class Template extends View {
 				'/{{(.+?)}}/s',
 				function($expr) use($self) {
 					$str=trim($self->token($expr[1]));
-					if (preg_match('/^(.+?)\s*\|\s*(raw|esc|format)$/',
+					if (preg_match('/^(.+?)\h*\|\h*(raw|esc|format)$/',
 						$str,$parts))
 						$str='Base::instance()->'.$parts[2].'('.$parts[1].')';
 					return '<?php echo '.$str.'; ?>';
@@ -213,10 +218,10 @@ class Template extends View {
 	}
 
 	/**
-		Extend template with custom tag
-		@return NULL
-		@param $tag string
-		@param $func callback
+	*	Extend template with custom tag
+	*	@return NULL
+	*	@param $tag string
+	*	@param $func callback
 	**/
 	function extend($tag,$func) {
 		$this->tags.='|'.$tag;
@@ -224,23 +229,25 @@ class Template extends View {
 	}
 
 	/**
-		Call custom tag handler
-		@return string|FALSE
-		@param $func callback
-		@param $args array
+	*	Call custom tag handler
+	*	@return string|FALSE
+	*	@param $func callback
+	*	@param $args array
 	**/
 	function __call($func,array $args) {
-		return ($func[0]=='_')?
-			call_user_func_array($this->custom[$func],$args):
-			FALSE;
+		if ($func[0]=='_')
+			return call_user_func_array($this->custom[$func],$args);
+		if (method_exists($this,$func))
+			return call_user_func_array(array($this,$func),$args);
+		user_error(sprintf(self::E_Method,$func));
 	}
 
 	/**
-		Render template
-		@return string
-		@param $file string
-		@param $mime string
-		@param $hive array
+	*	Render template
+	*	@return string
+	*	@param $file string
+	*	@param $mime string
+	*	@param $hive array
 	**/
 	function render($file,$mime='text/html',array $hive=NULL) {
 		$fw=Base::instance();
@@ -257,12 +264,12 @@ class Template extends View {
 						$fw->read($view));
 					// Build tree structure
 					for ($ptr=0,$len=strlen($text),$tree=array(),$node=&$tree,
-						$stack=array(),$depth=0,$temp='';$ptr<$len;)
+						$stack=array(),$depth=0,$tmp='';$ptr<$len;)
 						if (preg_match('/^<(\/?)(?:F3:)?('.$this->tags.')\b'.
-							'((?:\s+\w+s*=\s*(?:"(?:.+?)"|\'(?:.+?)\'))*)\s*'.
-							'(\/?)>/is',substr($text,$ptr),$match)) {
-							if (strlen($temp))
-								$node[]=$temp;
+							'((?:\h+\w+\h*=\h*(?:"(?:.+?)"|\'(?:.+?)\'))*)'.
+							'\h*(\/?)>/is',substr($text,$ptr),$match)) {
+							if (strlen($tmp))
+								$node[]=$tmp;
 							// Element node
 							if ($match[1]) {
 								// Find matching start tag
@@ -290,8 +297,8 @@ class Template extends View {
 								if ($match[3]) {
 									// Process attributes
 									preg_match_all(
-										'/\s+(\w+)\s*='.
-										'\s*(?:"(.+?)"|\'(.+?)\')/s',
+										'/\b([\w-]+)\h*=\h*'.
+										'(?:"(.+?)"|\'(.+?)\')/s',
 										$match[3],$attr,PREG_SET_ORDER);
 									foreach ($attr as $kv)
 										$node['@attrib'][$kv[1]]=
@@ -303,17 +310,17 @@ class Template extends View {
 								else
 									$depth++;
 							}
-							$temp='';
+							$tmp='';
 							$ptr+=strlen($match[0]);
 						}
 						else {
 							// Text node
-							$temp.=$text[$ptr];
+							$tmp.=substr($text,$ptr,1);
 							$ptr++;
 						}
-					if (strlen($temp))
+					if (strlen($tmp))
 						// Append trailing text
-						$node[]=$temp;
+						$node[]=$tmp;
 					// Break references
 					unset($node);
 					unset($stack);
@@ -331,6 +338,15 @@ class Template extends View {
 				return $this->sandbox();
 			}
 		user_error(sprintf(Base::E_Open,$file));
+	}
+
+	function __construct() {
+		$ref=new ReflectionClass(__CLASS__);
+		$this->tags='';
+		foreach ($ref->getmethods() as $method)
+			if (preg_match('/^_(?=[[:alpha:]])/',$method->name))
+				$this->tags.=(strlen($this->tags)?'|':'').
+					substr($method->name,1);
 	}
 
 }

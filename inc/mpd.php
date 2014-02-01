@@ -270,6 +270,14 @@ class Mpd {
 	public function controlStop() {
 		$this->_sendCmd(MPD_CMD_STOP);
 	}
+
+	/*
+	 *
+	 */
+	public function controlPlayback($songId = false) {
+		if(is_int($songId) && !$songId)
+			$this->_sendCmd(MPD_CMD_PLAY, $songId);
+	}
 	
 	
 	/*
@@ -278,19 +286,25 @@ class Mpd {
 	public function getCurrentTrackInfo() {
 		$playlist = ($this->playlist != NULL) ? $this->playlist : $this->getPlaylist();
 		$status = ($this->playerStatus != NULL) ? $this->playerStatus : $this->getCurrentStatus();
-		
+	
 		if(!isset($status['songid'])) {
 			return false;
 		} else {
-			return array(
-				'id' => $playlist[$status['songid']]['Id'],
-				'artist' => $playlist[$status['songid']]['Artist'],
-				'title' => $playlist[$status['songid']]['Title'],
-				'album' => $playlist[$status['songid']]['Album'],
-				'time' => $playlist[$status['songid']]['Time'],
-				'track' => $playlist[$status['songid']]['Track'],
-				'genre' => $playlist[$status['songid']]['Genre'],
-			);
+			$id = $status['songid'];
+			foreach($playlist as $key => $song) {
+				if($song['Id'] == $id) {
+					return array(
+						'id' => $playlist[$key]['Id'],
+						'artist' => isset($playlist[$key]['Artist']) ? $playlist[$key]['Artist'] : 'Stream',
+						'title' => isset($playlist[$key]['Title']) ? $playlist[$key]['Title'] : '',
+						'album' => isset($playlist[$key]['Album']) ? $playlist[$key]['Album'] : '',
+						'time' => isset($playlist[$key]['Time']) ? $playlist[$key]['Time'] : '', 
+						'track' => isset($playlist[$key]['Track']) ? $playlist[$key]['Track'] : '',
+						'genre' => isset($playlist[$key]['Genre']) ? $playlist[$key]['Genre'] : ''
+					);
+				}
+			}
+			//return array('id' => 1, 'artist', 'title', 'album', 'time', 'track', 'genre');
 		}
 	}
 }

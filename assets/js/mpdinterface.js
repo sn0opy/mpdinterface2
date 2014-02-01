@@ -7,7 +7,7 @@ $(document).ready(function() {
 			$('#audioplayer').pause();
 	});
 	
-	$('#controls a').click(function(e) {	
+	$('.controls a').click(function(e) {	
 		ctrlType = $(this).attr('href');
 		$.get(ctrlType);		
 		e.preventDefault();

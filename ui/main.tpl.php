@@ -2,30 +2,31 @@
 <html>
 <head>
 	<meta charset="UTF-8" />
+	<base href="{{@BASE}}">
 	<title>mpd-interface 2</title>
-	<link rel="stylesheet" href="{{@BASE}}/assets/css/gumby.css" type="text/css" />
-	<link rel="stylesheet" href="{{@BASE}}/assets/css/style.css" type="text/css" />
+	<link rel="stylesheet" href="/assets/css/gumby.css" type="text/css" />
+	<link rel="stylesheet" href="/assets/css/style.css" type="text/css" />
 </head>
 <body>
 	{{*
-	<F3:check if="{{@mpd_httpd_host && @mpd_httpd_port && @streamType}}">
+	<check if="{{@mpd_httpd_host && @mpd_httpd_port && @streamType}}">
 	<audio id="audioplayer">
 		<source src="http://{{@mpd_httpd_host}}:{{@mpd_httpd_port}}" type="{{@streamType}}" />
 	</audio>
-	</F3:check>
+	</check>
 	*}}
 	<nav class="navbar">
 		<div class="row">
 			<span class="nowplaying" id="npHead"></span>
 			<nav class="pull_right">
-				<ul id="controls">
-					<li><a href="{{@BASE}}/control/previous"><i class="icon-fast-backward"></i></a></li>
-					<li><a href="{{@BASE}}/control/play" id="playpause"><i class="icon-play"></i></a></li>
-					<li><a href="{{@BASE}}/control/stop"><i class="icon-stop"></i></a></li>
-					<li><a href="{{@BASE}}/control/next"><i class="icon-fast-forward"></i></a></li>
-					<F3:check if="{{@mpd_httpd_host && @mpd_httpd_port && @streamType}}">
+				<ul class="controls">
+					<li><a href="/control/previous"><i class="icon-fast-backward"></i></a></li>
+					<li><a href="/control/play" id="playpause"><i class="icon-play"></i></a></li>
+					<li><a href="/control/stop"><i class="icon-stop"></i></a></li>
+					<li><a href="/control/next"><i class="icon-fast-forward"></i></a></li>
+					<check if="{{isset(@mpd_httpd_host) && isset(@mpd_httpd_port) && isset(@streamType)}}">
 						<li><a href="#" class="playback" id="playback"><span id="pbstatus" title="Start audio stream in browser"><i class="icon-note"></i> <span id="pbstatustxt">off</span></span></a></li>
-					</F3:check>
+					</check>
 				</ul>
 			</nav>
 		</div>
@@ -33,14 +34,14 @@
 	<div class="row">
 	<table class="playlist">
 		<tbody>
-			<F3:repeat group="{{@playlist}}" value="{{@row}}">
+			<repeat group="{{@playlist}}" value="{{@row}}">
 				<tr{{(@currentTrack.id == @row.Id)?' class="nowplaying"':''}}>
 					<td>{{isset(@row.Artist) ? @row.Artist : ''}}</td>
-					<td>{{isset(@row.Title) ? @row.Title : @row.Name}}</td>
+					<td class="controls"><a href="/control/playback/{{@row.Id}}">{{isset(@row.Title) ? @row.Title : @row.Name}}</a></td>
 					<td>{{isset(@row.Album) ? @row.Album : ''}}</td>
 					<td>{{isset(@row.Time) ? gmdate("i:s", @row.Time) : ''}}</td>
 				</tr>
-			</F3:repeat>
+			</repeat>
 		</tbody>
 	</table>
 	</div>

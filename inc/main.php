@@ -9,15 +9,14 @@ class main extends controller {
 		$f3->set('playlist', $mpd->getPlaylist());
 		$f3->set('currentTrack', $mpd->getCurrentTrackInfo());
 		$f3->set('streamType', $mpd->getStreamType($f3->get('mpd_httpd_host'), $f3->get('mpd_httpd_port')));
-
-		$this->tpserve();
 	}
 	
 	public function control() {
 		$f3 = $this->framework;
 		$mpd = $this->mpd;
 		
-		$option = $f3->get('PARAMS.option');	
+		$option = $f3->get('PARAMS.option');
+		$param = $f3->get('PARAMS.param');
 		
 		switch($option) {
 			case 'pause':
@@ -25,6 +24,9 @@ class main extends controller {
 				break;
 			case 'play':
 				$mpd->controlPlay();
+				break;
+			case 'playback':
+				$mpd->controlPlayback($param);
 				break;
 			case 'stop':
 				$mpd->controlStop();
@@ -46,5 +48,6 @@ class main extends controller {
 			"state" => $f3->set('state', $mpd->getState()),
 			"currentTrack" => $f3->set('currentTrack', $mpd->getCurrentTrackInfo())
 		));
+		exit;
 	}
 }

@@ -27,7 +27,7 @@
 				</ul>
 			</nav>
 		</div>
-	</nav>	
+	</nav>
 	<div class="row">
 	<table class="playlist">
 		<tbody>

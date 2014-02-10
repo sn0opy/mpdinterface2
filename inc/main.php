@@ -38,6 +38,7 @@ class main extends controller {
 				$mpd->controlPrevious();
 				break;
 		}
+		exit();
 	}
 	
 	public function status() {

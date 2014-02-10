@@ -15,7 +15,7 @@ $(document).ready(function() {
 
 	// check mpd status periodically
 	setInterval(function() {
-		$.getJSON('/status', function(data) {
+		$.getJSON(BASE + '/status', function(data) {
 			console.log(data);	
 			
 			if(data.state == 'play') {
@@ -33,5 +33,5 @@ $(document).ready(function() {
 			else
 				$('#npHead').html(data.currentTrack.artist + ' - ' + data.currentTrack.title);
 		});
-	}, 2000);
+	}, 4000);
 });

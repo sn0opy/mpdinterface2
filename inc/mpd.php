@@ -210,7 +210,7 @@ class Mpd {
 	 */
 	public function getStreamType($host = 'localhost', $port = '8000') {
 		$headers = @get_headers('http://'.$host.':'.$port, 1);
-		return $headers['Content-Type'];
+		return $headers['Content-Type'] ? $headers['Content-Type'] : FALSE;
 	}
 	
 	/*
@@ -275,8 +275,9 @@ class Mpd {
 	 *
 	 */
 	public function controlPlayback($songId = false) {
-		if(is_int($songId) && !$songId)
+		if(is_int($songId) && !$songId) {
 			$this->_sendCmd(MPD_CMD_PLAY, $songId);
+		}
 	}
 	
 	
@@ -304,7 +305,6 @@ class Mpd {
 					);
 				}
 			}
-			//return array('id' => 1, 'artist', 'title', 'album', 'time', 'track', 'genre');
 		}
 	}
 }

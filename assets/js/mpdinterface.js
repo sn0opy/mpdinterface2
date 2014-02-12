@@ -27,11 +27,19 @@ $(document).ready(function() {
 				$('#playpause i').attr('class', 'icon-play');
 				$('#playpause').attr('href', '/control/play');
 			}
-			
-			if(data.state == 'stop')
+
+			if(data.state == 'stop') {
 				$('#npHead').html('');
-			else
-				$('#npHead').html(data.currentTrack.artist + ' - ' + data.currentTrack.title);
+				$('#playpause i').attr('class', 'icon-play');
+				$('#playpause').attr('href', '/control/play');
+			} else if(data.state == undefined) {
+				$('#npHead').html('MPD seems to be offline');
+			} else {
+				if(data.currentTrack.artist != '')
+					$('#npHead').html(data.currentTrack.artist + ' - ' + data.currentTrack.title);
+				else
+					$('#npHead').html(data.currentTrack.title);
+			}
 		});
 	}, 4000);
 });

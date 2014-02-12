@@ -123,7 +123,7 @@ class Mpd {
      * @return mixed
      */
     private function _connect() {
-		$this->sock = fsockopen($this->host, $this->port, $errno, $errstr, 15);
+		$this->sock = @fsockopen($this->host, $this->port, $errno, $errstr, 15);
 
 		if(!$this->sock)
 			return null;
@@ -146,7 +146,7 @@ class Mpd {
      * disconnects from the mpd server
      */
     private function _disconnect() {
-        fclose($this->sock);
+        @fclose($this->sock);
     }
 
     /**
@@ -227,9 +227,10 @@ class Mpd {
 	public function getCurrentStatus() {
 		$rows = explode("\n", $this->_sendCmd(MPD_CMD_STATUS));
 		foreach($rows as $row) {
-			$ex = explode(': ', $row);			
+			$ex = explode(': ', $row);
 			if($ex[0] && $ex[1])
 				$arr[$ex[0]] = $ex[1];
+
 		}
 		
 		$this->playerStatus = $arr;
@@ -296,7 +297,7 @@ class Mpd {
 				if($song['Id'] == $id) {
 					return array(
 						'id' => $playlist[$key]['Id'],
-						'artist' => isset($playlist[$key]['Artist']) ? $playlist[$key]['Artist'] : 'Stream',
+						'artist' => isset($playlist[$key]['Artist']) ? $playlist[$key]['Artist'] : '',
 						'title' => isset($playlist[$key]['Title']) ? $playlist[$key]['Title'] : '',
 						'album' => isset($playlist[$key]['Album']) ? $playlist[$key]['Album'] : '',
 						'time' => isset($playlist[$key]['Time']) ? $playlist[$key]['Time'] : '', 

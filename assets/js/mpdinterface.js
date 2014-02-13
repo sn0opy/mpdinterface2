@@ -7,17 +7,15 @@ $(document).ready(function() {
 			$('#audioplayer').pause();
 	});
 	
-	$('.controls a').click(function(e) {	
-		ctrlType = $(this).attr('href');
-		$.get(ctrlType);		
+	$('.controls a').click(function(e) {
 		e.preventDefault();
+		ctrlType = $(this).attr('href');
+		$.get(ctrlType);
 	});
 
 	// check mpd status periodically
 	setInterval(function() {
 		$.getJSON(BASE + '/status', function(data) {
-			console.log(data);
-			
 			if(data.state == 'play') {
 				$('#playpause i').attr('class', 'icon-pause');
 				$('#playpause').attr('href', '/control/pause');

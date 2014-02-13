@@ -184,8 +184,8 @@ class Mpd {
      * @param type $arg 
      */
     private function _sendCmd($command, $arg1 = false, $arg2 = false) {
-		if($arg1) $command .= '"'.$arg1.'"';		
-		if($arg2) $command .= '"'.$arg2.'"';
+		if($arg1) $command .= ' '.$arg1;		
+		if($arg2) $command .= ' '.$arg2;
 
 		if($this->sock)
 			@fwrite($this->sock, $command."\n");

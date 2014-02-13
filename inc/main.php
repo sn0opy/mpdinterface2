@@ -16,7 +16,7 @@ class main extends controller {
 		$mpd = $this->mpd;
 		
 		$option = $f3->get('PARAMS.option');
-		$param = (int) $f3->get('PARAMS.param');
+		$param = $f3->get('PARAMS.param');
 		
 		switch($option) {
 			case 'pause':
@@ -26,7 +26,7 @@ class main extends controller {
 				$mpd->controlPlay();
 				break;
 			case 'playback':
-				$mpd->controlPlayback($param);
+				$mpd->controlPlayback((int)$param);
 				break;
 			case 'stop':
 				$mpd->controlStop();

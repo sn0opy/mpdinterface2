@@ -16,7 +16,7 @@ class main extends controller {
 		$mpd = $this->mpd;
 		
 		$option = $f3->get('PARAMS.option');
-		$param = $f3->get('PARAMS.param');
+		$param = (int) $f3->get('PARAMS.param');
 		
 		switch($option) {
 			case 'pause':

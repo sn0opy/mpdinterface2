@@ -16,7 +16,7 @@ $(document).ready(function() {
 	// check mpd status periodically
 	setInterval(function() {
 		$.getJSON(BASE + '/status', function(data) {
-			console.log(data);	
+			console.log(data);
 			
 			if(data.state == 'play') {
 				$('#playpause i').attr('class', 'icon-pause');

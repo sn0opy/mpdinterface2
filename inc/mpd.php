@@ -228,11 +228,9 @@ class Mpd {
 		$rows = explode("\n", $this->_sendCmd(MPD_CMD_STATUS));
 		foreach($rows as $row) {
 			$ex = explode(': ', $row);
-			if($ex[0] && $ex[1])
+			if(isset($ex[1]) && isset($ex[0]))
 				$arr[$ex[0]] = $ex[1];
-
-		}
-		
+		}	
 		$this->playerStatus = $arr;
 		return $this->playerStatus;
 	}
@@ -275,12 +273,11 @@ class Mpd {
 	/*
 	 *
 	 */
-	public function controlPlayback($songId = false) {
-		if(is_int($songId) && !$songId) {
+	public function controlPlayback($songId) {
+		if(is_int($songId)) {
 			$this->_sendCmd(MPD_CMD_PLAY, $songId);
 		}
 	}
-	
 	
 	/*
 	 * 
@@ -288,7 +285,7 @@ class Mpd {
 	public function getCurrentTrackInfo() {
 		$playlist = ($this->playlist != NULL) ? $this->playlist : $this->getPlaylist();
 		$status = ($this->playerStatus != NULL) ? $this->playerStatus : $this->getCurrentStatus();
-	
+
 		if(!isset($status['songid'])) {
 			return false;
 		} else {

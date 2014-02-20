@@ -38,3 +38,10 @@ tr.nowplaying {
 	border: 0px;
 }
 
+.playlistArtist, .playlistTitle, #npHead {
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+	max-width: 600px;
+}
+

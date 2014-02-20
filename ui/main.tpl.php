@@ -32,9 +32,9 @@
 	<table class="playlist">
 		<tbody>
 			<repeat group="{{@playlist}}" value="{{@row}}">
-				<tr{{(@currentTrack.id == @row.Id)?' class="nowplaying"':''}}>
-					<td>{{isset(@row.Artist) ? @row.Artist : 'n/a'}}</td>
-					<td class="controls"><a href="{{@BASE}}/control/playback/{{@row.Pos}}">{{isset(@row.Title) ? @row.Title : isset(@row.Name) ? @row.Name : @row.file}}</a></td>
+				<tr data-songid="{{@row.Pos}}">
+					<td class="playlistArtist">{{isset(@row.Artist) ? @row.Artist : 'n/a'}}</td>
+					<td class="controls playlistTitle"><a href="{{@BASE}}/control/playback/{{@row.Pos}}">{{isset(@row.Title) ? @row.Title : isset(@row.Name) ? @row.Name : @row.file}}</a></td>
 					<td>{{isset(@row.Album) ? @row.Album : 'n/a'}}</td>
 					<td>{{isset(@row.Time) ? gmdate("i:s", @row.Time) : 'n/a'}}</td>
 				</tr>

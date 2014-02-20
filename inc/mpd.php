@@ -9,43 +9,10 @@
  * 
  * 
  * @author Sascha Ohms <sasch9r@gmail.com>
- * @copyright Copyright (c) 2013, Sascha Ohms
+ * @copyright Copyright (c) 2014, Sascha Ohms
  * @version 0.0.1
  */
 
-define('MPD_CMD_STATUS',      'status');
-define('MPD_CMD_STATISTICS',  'stats');
-define('MPD_CMD_VOLUME',      'volume');
-define('MPD_CMD_SETVOL',      'setvol');
-define('MPD_CMD_PLAY',        'play');
-define('MPD_CMD_STOP',        'stop');
-define('MPD_CMD_PAUSE',       'pause');
-define('MPD_CMD_NEXT',        'next');
-define('MPD_CMD_PREV',        'previous');
-define('MPD_CMD_PLLIST',      'playlistinfo');
-define('MPD_CMD_PLADD',       'add');
-define('MPD_CMD_PLREMOVE',    'delete');
-define('MPD_CMD_PLCLEAR',     'clear');
-define('MPD_CMD_PLSHUFFLE',   'shuffle');
-define('MPD_CMD_PLLOAD',      'load');
-define('MPD_CMD_PLSAVE',      'save');
-define('MPD_CMD_KILL',        'kill');
-define('MPD_CMD_REFRESH',     'update');
-define('MPD_CMD_REPEAT',      'repeat');
-define('MPD_CMD_LSDIR',       'lsinfo');
-define('MPD_CMD_SEARCH',      'search');
-define('MPD_CMD_START_BULK',  'command_list_begin');
-define('MPD_CMD_END_BULK',    'command_list_end');
-define('MPD_CMD_FIND',        'find');
-define('MPD_CMD_RANDOM',      'random');
-define('MPD_CMD_SEEK',        'seek');
-define('MPD_CMD_PLSWAPTRACK', 'swap');
-define('MPD_CMD_PLMOVETRACK', 'move');
-define('MPD_CMD_PASSWORD',    'password');
-define('MPD_CMD_TABLE',       'list');
-
-define('MPD_RESPONSE_ERR',	  'ACK');
-define('MPD_RESPONSE_OK',     'OK');
 
 class Mpd {
 	/**
@@ -111,16 +78,14 @@ class Mpd {
 	}
     
     /**
-     * close socket to server
+	 *
      */
     public function __destruct() {
         $this->_disconnect();
     }	
     
     /**
-     * connects to a mpd server
-     * 
-     * @return mixed
+     *
      */
     private function _connect() {
 		$this->sock = @fsockopen($this->host, $this->port, $errno, $errstr, 15);
@@ -130,11 +95,11 @@ class Mpd {
 
 		$resp = fgets($this->sock, 128);
 
-		if(strpos($resp, MPD_RESPONSE_OK) === 0) {
+		if(strpos($resp, 'OK') === 0) {
 			$this->connected = true;
 		
 			if(!is_null($this->password))
-				if($this->_sendCmd(MPD_CMD_PASSWORD, $this->password))
+				if($this->_sendCmd('password', $this->password))
 					return true;
 		}
 		
@@ -143,14 +108,12 @@ class Mpd {
 	
     /**
 	 * 
-     * disconnects from the mpd server
      */
     private function _disconnect() {
         @fclose($this->sock);
     }
 
     /**
-     *
      *
      */
 	private function _parseFileListResp($resp) {
@@ -183,15 +146,15 @@ class Mpd {
      *
      * @param type $arg 
      */
-    private function _sendCmd($command, $arg1 = false, $arg2 = false) {
-		if($arg1) $command .= ' '.$arg1;		
-		if($arg2) $command .= ' '.$arg2;
+    private function _sendCmd($command, $arg1 = FALSE, $arg2 = FALSE) {
+		if($arg1!==FALSE) $command .= ' '.$arg1;		
+		if($arg2!==FALSE) $command .= ' '.$arg2;
 
 		if($this->sock)
 			@fwrite($this->sock, $command."\n");
 
 		$resp = NULL;
-		while(($line = @fgets($this->sock)) != stristr($line, MPD_RESPONSE_OK))
+		while(($line = @fgets($this->sock)) != stristr($line, 'OK'))
 			$resp .= $line;
 		
 		return $resp;
@@ -201,7 +164,7 @@ class Mpd {
 	 * 
 	 */
     public function getPlaylist() {
-		$this->playlist = $this->_parseFileListResp($this->_sendCmd(MPD_CMD_PLLIST));
+		$this->playlist = $this->_parseFileListResp($this->_sendCmd('playlistinfo'));
 		return $this->playlist;
     }
 	
@@ -216,20 +179,21 @@ class Mpd {
 	/*
 	 * 
 	 */
-	public function getState($status = false) {
-		$status = $status ? $status : $this->getCurrentStatus();
-		return $this->playerStatus['state'];
+	public function getState() {
+		$status = $this->getCurrentStatus() ? $this->getCurrentStatus() : 'stop';
+		return $status;
 	}
 	
 	/*
 	 * 
 	 */
 	public function getCurrentStatus() {
-		$rows = explode("\n", $this->_sendCmd(MPD_CMD_STATUS));
+		$rows = explode("\n", $this->_sendCmd('status'));
+		$arr = array();
 		foreach($rows as $row) {
 			$ex = explode(': ', $row);
 			if(isset($ex[1]) && isset($ex[0]))
-				$arr[$ex[0]] = $ex[1];
+				$arr[strtolower($ex[0])] = $ex[1];
 		}	
 		$this->playerStatus = $arr;
 		return $this->playerStatus;
@@ -239,35 +203,35 @@ class Mpd {
 	 * 
 	 */
 	public function controlPause() {
-		$this->_sendCmd(MPD_CMD_PAUSE);
+		$this->_sendCmd('pause');
 	}
 	
 	/*
 	 * 
 	 */
 	public function controlPlay() {
-		$this->_sendCmd(MPD_CMD_PLAY);
+		$this->_sendCmd('play');
 	}
 	
 	/*
 	 * 
 	 */
 	public function controlNext() {
-		$this->_sendCmd(MPD_CMD_NEXT);
+		$this->_sendCmd('next');
 	}
 	
 	/*
 	 * 
 	 */
 	public function controlPrevious() {
-		$this->_sendCmd(MPD_CMD_PREV);
+		$this->_sendCmd('previous');
 	}
 	
 	/*
 	 * 
 	 */
 	public function controlStop() {
-		$this->_sendCmd(MPD_CMD_STOP);
+		$this->_sendCmd('stop');
 	}
 
 	/*
@@ -275,7 +239,7 @@ class Mpd {
 	 */
 	public function controlPlayback($songId) {
 		if(is_int($songId)) {
-			$this->_sendCmd(MPD_CMD_PLAY, $songId);
+			$this->_sendCmd('play', $songId);
 		}
 	}
 	
@@ -283,26 +247,12 @@ class Mpd {
 	 * 
 	 */
 	public function getCurrentTrackInfo() {
-		$playlist = ($this->playlist != NULL) ? $this->playlist : $this->getPlaylist();
-		$status = ($this->playerStatus != NULL) ? $this->playerStatus : $this->getCurrentStatus();
-
-		if(!isset($status['songid'])) {
-			return false;
-		} else {
-			$id = $status['songid'];
-			foreach($playlist as $key => $song) {
-				if($song['Id'] == $id) {
-					return array(
-						'id' => $playlist[$key]['Id'],
-						'artist' => isset($playlist[$key]['Artist']) ? $playlist[$key]['Artist'] : '',
-						'title' => isset($playlist[$key]['Title']) ? $playlist[$key]['Title'] : '',
-						'album' => isset($playlist[$key]['Album']) ? $playlist[$key]['Album'] : '',
-						'time' => isset($playlist[$key]['Time']) ? $playlist[$key]['Time'] : '', 
-						'track' => isset($playlist[$key]['Track']) ? $playlist[$key]['Track'] : '',
-						'genre' => isset($playlist[$key]['Genre']) ? $playlist[$key]['Genre'] : ''
-					);
-				}
-			}
+		$l = explode("\n", $this->_sendCmd('currentsong'));		
+		foreach($l as $r) {
+			$ex = explode(': ', $r);
+			if(isset($ex[1]) && isset($ex[0]))
+				$arr[strtolower($ex[0])] = $ex[1];
 		}
+		return $arr;
 	}
 }

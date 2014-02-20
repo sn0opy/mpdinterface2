@@ -5,9 +5,7 @@ class main extends controller {
 		$f3 = $this->framework;
 		$mpd = $this->mpd;
 		
-		$f3->set('state', $mpd->getState());
 		$f3->set('playlist', $mpd->getPlaylist());
-		$f3->set('currentTrack', $mpd->getCurrentTrackInfo());
 		$f3->set('streamType', $mpd->getStreamType($f3->get('mpd_httpd_host'), $f3->get('mpd_httpd_port')));
 	}
 	
@@ -46,8 +44,8 @@ class main extends controller {
 		$mpd = $this->mpd;
 		
 		echo json_encode(array(
-			"state" => $f3->set('state', $mpd->getState()),
-			"currentTrack" => $f3->set('currentTrack', $mpd->getCurrentTrackInfo())
+			"status" => $mpd->getState(),
+			"currentTrack" => $mpd->getCurrentTrackInfo()
 		));
 		exit;
 	}
